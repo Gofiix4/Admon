@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-    <title>ADMON - Gestión de grupos</title>
+    <title>ADMON - Gestión de periodos</title>
     <!-- Favicon-->
     <link rel="icon" href="{% static 'images/ico.jpg' %}" type="image/x-icon">
 
@@ -148,7 +148,7 @@
                     </li>
                     {% endif %}
                     {% if permisos == 1 or permisos == 2 %}
-                    <li class="active">
+                    <li>
                         <a href="{% url 'grupo' %}">
                             <i class="material-icons">group</i>
                             <span>Grupos</span>
@@ -172,7 +172,7 @@
                             <span>Alumnos</span>
                         </a>
                     </li>
-                    <li>
+                    <li class="active">
                         <a href="{% url 'periodo' %}">
                             <i class="material-icons">timeline</i>
                             <span>Periodos</span>
@@ -305,7 +305,7 @@
         <div class="container-fluid">
             <div class="header">
                 <h2>
-                    GRUPOS
+                    PERIODOS
                 </h2>
             </div>
             <div class="row clearfix">
@@ -314,7 +314,7 @@
                         <div class="body">
                             <div class="header">
                                 <h2>
-                                    <Strong>Registrar un grupo</Strong>
+                                    <Strong>Crear un periodo</Strong>
                                 </h2>
                             </div>
                             {% if mensaje %}
@@ -330,14 +330,16 @@
                             </div>
                             {% endif %}
                             <br>
-                            <form action="{% url 'grupo' %}" method="POST">
+                            {% if ultimo_periodo.fk_Status.Status == "Activo" %}
+                            {% else %}
+                            <form action="{% url 'periodo' %}" method="POST">
                                 {% csrf_token %}
                                 <div class="form-group">
-                                    <h2 class="card-inside-title">Nombre:</h2>
+                                    <h2 class="card-inside-title">Nombre del periodo:</h2>
                                     <div class="row clearfix">
                                         <div class="col-sm-3">
                                             <div class="form-line">
-                                                <input type="text" name="Grupo" id="Grupo" class="form-control" placeholder="Grupo"/>
+                                                <input type="text" name="periodo" id="periodo" class="form-control" placeholder="Nombre del eriodo"/>
                                             </div>
                                         </div>
                                     </div>
@@ -347,50 +349,58 @@
                                         <div class="col-sm-3">
                                             <div class="form-line">
                                                 <button type="submit" name="Crear" class="btn btn-success waves-effect">
-                                                    <i class="material-icons">group</i>
-                                                    <span>Crear grupo</span>
+                                                    <i class="material-icons">timeline</i>
+                                                    <span>Crear periodo</span>
                                                 </button>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </form>
+                            {% endif %}
                         </div>
                     </div>
                     <div class="card">
                         <div class="body">
                             <div class="header">
                                 <h2>
-                                    <Strong>Grupos</Strong>
+                                    <Strong>Periodos</Strong>
                                 </h2>
                             </div>
                             <div class="table-responsive">
                                 <table class="table table-bordered table-striped table-hover dataTable js-exportable">
                                     <thead>
                                         <tr>
-                                            <th>Grupo</th>
+                                            <th>Periodo</th>
+                                            <th>Status</th>
+                                            <th></th>
                                             <th></th>
                                         </tr>
                                     </thead>
                                     <tfoot>
                                         <tr>
-                                            <th>Grupo</th>
+                                            <th>Periodo</th>
+                                            <th>Status</th>
+                                            <th></th>
                                             <th></th>
                                         </tr>
                                     </tfoot>
                                     <tbody>
-                                        <form method="POST" action="{% url 'grupo' %}">
+                                        <form method="POST" action="{% url 'periodo' %}">
                                             {% csrf_token %}
-                                            {% for grupo in grupos %}
+                                            {% for periodo in periodos %}
                                                 <tr>
-                                                    <td>{{ grupo.Grupo }}</td>
-                                                    <td>
-                                                        <button type="submit" name="Borrar" value="{{ grupo.id_Grupo }}" class="btn btn-danger waves-effect"
-                                                        onclick="return confirm('¿Quieres borrar este grupo?')">
-                                                            <i class="material-icons">delete</i>
-                                                            <span>Borrar</span>
-                                                        </button>
-                                                    </td>
+                                                    <td>{{ periodo.Periodo }}</td>
+                                                    <td>{{ periodo.fk_Status.Status }}</td>
+                                                    {% if periodo.fk_Status.Status == "Activo" %}
+                                                        <td>
+                                                            <button type="submit" name="Borrar" value="{{ periodo.id_Periodo }}" class="btn btn-danger waves-effect"
+                                                            onclick="return confirm('¿Estas seguro que quieres concluir este periodo?')">
+                                                                <i class="material-icons">close</i>
+                                                                <span>Concluir</span>
+                                                            </button>
+                                                        </td>
+                                                    {% endif %}
                                                 </tr>
                                             {% endfor %}
                                         </form>

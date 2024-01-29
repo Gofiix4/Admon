@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-    <title>ADMON - Gestión de grupos</title>
+    <title>ADMON - Asignaciones</title>
     <!-- Favicon-->
     <link rel="icon" href="{% static 'images/ico.jpg' %}" type="image/x-icon">
 
@@ -19,11 +19,11 @@
     <!-- Waves Effect Css -->
     <link href="{% static 'plugins/node-waves/waves.css' %}" rel="stylesheet" />
 
-    <!-- JQuery DataTable Css -->
-    <link href="{% static 'plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.css' %}" rel="stylesheet">
-
     <!-- Animation Css -->
     <link href="{% static 'plugins/animate-css/animate.css' %}" rel="stylesheet" />
+    
+    <!-- JQuery DataTable Css -->
+    <link href="{% static 'plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.css' %}" rel="stylesheet">
 
     <!-- Bootstrap Material Datetime Picker Css -->
     <link href="{% static 'plugins/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css' %}" rel="stylesheet" />
@@ -148,7 +148,7 @@
                     </li>
                     {% endif %}
                     {% if permisos == 1 or permisos == 2 %}
-                    <li class="active">
+                    <li>
                         <a href="{% url 'grupo' %}">
                             <i class="material-icons">group</i>
                             <span>Grupos</span>
@@ -178,7 +178,7 @@
                             <span>Periodos</span>
                         </a>
                     </li>
-                    <li>
+                    <li class="active">
                         <a href="{% url 'asignacion' %}">
                             <i class="material-icons">group_work</i>
                             <span>Grupos y docentes</span>
@@ -305,7 +305,7 @@
         <div class="container-fluid">
             <div class="header">
                 <h2>
-                    GRUPOS
+                    Asignaciones
                 </h2>
             </div>
             <div class="row clearfix">
@@ -314,7 +314,7 @@
                         <div class="body">
                             <div class="header">
                                 <h2>
-                                    <Strong>Registrar un grupo</Strong>
+                                    <Strong>Realiza la asignación correspondiente</Strong>
                                 </h2>
                             </div>
                             {% if mensaje %}
@@ -330,25 +330,61 @@
                             </div>
                             {% endif %}
                             <br>
-                            <form action="{% url 'grupo' %}" method="POST">
+                            <form action="{% url 'asignacion' %}" method="POST">
                                 {% csrf_token %}
-                                <div class="form-group">
-                                    <h2 class="card-inside-title">Nombre:</h2>
-                                    <div class="row clearfix">
-                                        <div class="col-sm-3">
+                                <div class="row clearfix">
+                                    <div class="col-sm-12">
+                                        <div class="form-group">
+                                            <h2 class="card-inside-title">Alumno:</h2>
                                             <div class="form-line">
-                                                <input type="text" name="Grupo" id="Grupo" class="form-control" placeholder="Grupo"/>
+                                                <select class="form-control show-tick" name="fk_Alumno" id="fk_Alumno">
+                                                    {% for alumno in alumnos %}
+                                                    <option value="{{ alumno.id }}">{{ alumno.first_name }} {{ alumno.last_name }}</option>
+                                                    {% endfor %}
+                                                </select>
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <div class="row clearfix">
-                                        <div class="col-sm-3">
+                                        <div class="form-group">
+                                            <h2 class="card-inside-title">Grupo:</h2>
+                                            <div class="form-line">
+                                                <select class="form-control show-tick" name="fk_Grupo" id="fk_Grupo">
+                                                    {% for grupo in grupos %}
+                                                    <option value="{{ grupo.id_Grupo }}">{{ grupo.Grupo }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <h2 class="card-inside-title">Periodo:</h2>
+                                            <div class="form-line">
+                                                <input class="form-control" type="text" value="{{ ultimo_periodo.Periodo }}" disabled="True">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <h2 class="card-inside-title">Materia:</h2>
+                                            <div class="form-line">
+                                                <select class="form-control show-tick" name="fk_Materia" id="fk_Materia">
+                                                    {% for materia in materias %}
+                                                    <option value="{{ materia.id_Materia }}">{{ materia.Materia }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <h2 class="card-inside-title">Docente:</h2>
+                                            <div class="form-line">
+                                                <select class="form-control show-tick" name="fk_Docente" id="fk_Docente">
+                                                    {% for docente in docentes %}
+                                                    <option value="{{ docente.id }}">{{ docente.first_name }} {{ docente.last_name }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
                                             <div class="form-line">
                                                 <button type="submit" name="Crear" class="btn btn-success waves-effect">
-                                                    <i class="material-icons">group</i>
-                                                    <span>Crear grupo</span>
+                                                    <i class="material-icons">book</i>
+                                                    <span>Realizar asignación</span>
                                                 </button>
                                             </div>
                                         </div>
@@ -361,34 +397,46 @@
                         <div class="body">
                             <div class="header">
                                 <h2>
-                                    <Strong>Grupos</Strong>
+                                    <Strong>Docentes</Strong>
                                 </h2>
                             </div>
                             <div class="table-responsive">
                                 <table class="table table-bordered table-striped table-hover dataTable js-exportable">
                                     <thead>
                                         <tr>
+                                            <th>Alumno</th>
                                             <th>Grupo</th>
+                                            <th>Periodo</th>
+                                            <th>Materia</th>
+                                            <th>Docente</th>
                                             <th></th>
                                             <th></th>
                                         </tr>
                                     </thead>
                                     <tfoot>
                                         <tr>
+                                            <th>Alumno</th>
                                             <th>Grupo</th>
+                                            <th>Periodo</th>
+                                            <th>Materia</th>
+                                            <th>Docente</th>
                                             <th></th>
                                             <th></th>
                                         </tr>
                                     </tfoot>
                                     <tbody>
-                                        <form method="POST" action="{% url 'grupo' %}">
+                                        <form method="POST" action="{% url 'asignacion' %}">
                                             {% csrf_token %}
-                                            {% for grupo in grupos %}
+                                            {% for asignacion in asignaciones %}
                                                 <tr>
-                                                    <td>{{ grupo.Grupo }}</td>
+                                                    <td>{{ asignacion.fk_Alumno.first_name }} {{ asignacion.fk_Alumno.last_name }}</td>
+                                                    <td>{{ asignacion.fk_Grupo.Grupo }}</td>
+                                                    <td>{{ asignacion.fk_Periodo.Periodo }}</td>
+                                                    <td>{{ asignacion.fk_Materia.Materia }}</td>
+                                                    <td>{{ asignacion.fk_Docente.first_name }} {{ asignacion.fk_Docente.last_name }}</td>
                                                     <td>
-                                                        <button type="submit" name="Borrar" value="{{ grupo.id_Grupo }}" class="btn btn-danger waves-effect"
-                                                        onclick="return confirm('¿Quieres borrar este grupo?')">
+                                                        <button type="submit" name="Borrar" value="{{ asignacion.id_Asignacion }}" class="btn btn-danger waves-effect"
+                                                        onclick="return confirm('¿Quieres borrar esta asignación?')">
                                                             <i class="material-icons">delete</i>
                                                             <span>Borrar</span>
                                                         </button>
